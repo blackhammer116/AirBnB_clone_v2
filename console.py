@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """ Console Module """
+import re
+import os
 import cmd
 import sys
 from models.base_model import BaseModel
@@ -113,18 +115,43 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
+    def do_create(self, *args, **kwargs):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
+        elif not kwargs:
+            return
         elif args not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+        else:
+            if not kwargs:
+                new_instance = HBNBCommand.classes[args]()
+                storage.save()
+                print(new_instance.id)
+                storage.save()
+            else:
+                obj_parm = {}
+                key_name = 'name'
+                str_pattern = r'(?P<t_str>"([^"]|\")*")'
+                float_pattern = r'(?P<t_float>[-+]?\d+\.\d+)'
+                int_pattern = r'(?P<t_int>[-+]?\d+)'
+
+                for key, value in kwargs.items():
+                    if value is float_pattern:
+                        obj_parm[key] = float(value)
+                    elif value is str_pattern:
+                        obj_parm[key] = str(value[1:-1].replace('_',' '))
+                    elif value is int_pattern:
+                        obj_parm[key] = int(value)
+                new_instance = HBHBCommand.classes[args]()
+                for key, value in obj_parm.items():
+                    setattr(new_instance, key, value)
+                    storage.save()
+                    print(new_instance.id)
+                    storage.save()
+
 
     def help_create(self):
         """ Help information for the create method """
