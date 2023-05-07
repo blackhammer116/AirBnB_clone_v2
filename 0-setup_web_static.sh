@@ -22,8 +22,11 @@ fi
 str=\
 "
 <html>
-<head><title>simple response</title></head>
-<body>ARTIMUS Leading Tech</body>
+<head>
+</head>
+<body>
+   Holberton School
+</body>
 </html>
 "
 if [ ! -f /data/web_static/releases/test/index.html ]; then
