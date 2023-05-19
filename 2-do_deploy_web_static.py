@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from fabric.api import run, put
+from fabric.api import run, put, env
 """
   These modules are used to run the bash commands remotely
 """
