@@ -15,8 +15,8 @@ def do_pack():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     path = "versions/web_static_{}.tgz".format(timestamp)
     if not os.path.exists("versions"):
-      local("mkdir versions")
+        local("mkdir versions")
     if (local("tar -cvzf {} web_static".format(path))):
-      return path
+        return path
     else:
-      return None
+        return None
