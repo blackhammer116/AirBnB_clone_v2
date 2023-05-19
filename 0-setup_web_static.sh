@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # this script prepares the necessary configurations to deploy a static page
 sudo apt-get update
-sudo apt-get install nginx
+sudo apt-get -y install nginx
 sudo ufw allow 'Nginx HTTP'
 
 if [ ! -d /data/ ]; then
@@ -38,7 +38,9 @@ if [ -L /data/web_static/current ]; then
 else
 	ln -s /data/web_static/releases/test/ /data/web_static/current
 fi
-sudo chown -R ubuntu:ubuntu /data/
+sudo chown -R ubuntu /data/
+sudo chgrp -R ubuntu /data/
+
 sudo sed -i "/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}" /etc/nginx/sites-enabled/default
 
 sudo service nginx restart
