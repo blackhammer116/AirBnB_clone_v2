@@ -1,37 +1,30 @@
 #!/usr/bin/python3
-import os
-from fabric.api import run, put, env
 """
-  These modules are used to run the bash commands remotely
+Fabric script based on the file 1-pack_web_static.py that distributes an
+archive to the web servers
 """
 
-
+from fabric.api import put, run, env
+from os.path import exists
 env.hosts = ['100.25.143.38', '54.160.96.215']
-env.user = 'ubuntu'
-env.key_filename = '/private'
 
 
 def do_deploy(archive_path):
-    """
-        This function deployes the archive file on both servers and
-        unzip them
-        Args:
-            archive_path (str): path of the archived folder
-        Return:
-            True on success False on fail
-    """
-    if not os.path.exists(archive_path):
+    """distributes an archive to the web servers"""
+    if exists(archive_path) is False:
         return False
     try:
-        put(archive_path, "/tmp/")
-        filename = archive_path.split('/')[-1]
-        new_path = '/data/web_static/releases/{}'.format(filename[:-4])
-        run("tar -xzvf /tmp/{} -C {}".format(filename, new_path))
-        run("rm /tmp/{}".format(filename))
-        run("rm -f /data/web_static/current")
-        run("ln -s /data/web_static/releases/{} /data/web_static/current"
-            .format(filename[:-4]))
-        print("New version deployed!")
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
+        path = "/data/web_static/releases/"
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
-    except Exception:
+    except:
         return False

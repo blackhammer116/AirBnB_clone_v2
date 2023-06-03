@@ -1,46 +1,12 @@
 #!/usr/bin/env bash
-# this script prepares the necessary configurations to deploy a static page
-sudo apt-get update
+# sets up the web servers for the deployment of web_static
+
+sudo apt-get -y update
+sudo apt-get -y upgrade
 sudo apt-get -y install nginx
-sudo ufw allow 'Nginx HTTP'
-
-if [ ! -d /data/ ]; then
-	sudo mkdir /data/
-fi
-if [ ! -d /data/web_static/ ]; then
-	sudo mkdir /data/web_static/
-fi
-if [ ! -d /data/web_static/releases ]; then
-	sudo mkdir /data/web_static/releases/
-fi
-if [ ! -d /data/web_static/shared/ ]; then
-	sudo mkdir /data/web_static/shared/
-fi
-if [ ! -d /data/web_static/releases/test/ ]; then
-	sudo mkdir /data/web_static/releases/test/
-fi
-str=\
-"
-<html>
-<head>
-</head>
-<body>
-   Holberton School
-</body>
-</html>
-"
-if [ ! -f /data/web_static/releases/test/index.html ]; then
-	echo "$str" > /data/web_static/releases/test/index.html
-fi
-if [ -L /data/web_static/current ]; then
-	rm /data/web_static/current
-	ln -s /data/web_static/releases/test/ /data/web_static/current
-else
-	ln -s /data/web_static/releases/test/ /data/web_static/current
-fi
-sudo chown -R ubuntu /data/
-sudo chgrp -R ubuntu /data/
-
-sudo sed -i "/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}" /etc/nginx/sites-enabled/default
-
-sudo service nginx restart
+sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
+echo "This is a test" | sudo tee /data/web_static/releases/test/index.html
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo chown -hR ubuntu:ubuntu /data/
+sudo sed -i '38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}\n' /etc/nginx/sites-available/default
+sudo service nginx start
