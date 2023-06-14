@@ -12,5 +12,11 @@ strict_slashes=False
 def Hello_HBHB():
   return "Hello HBNB!"
 
+@app.route('/airbnb-onepage/', strict_slashes=False)
+def AIRBNB_PAGE():
+    content = request.data()
+    return content
+
+
 if __name__ == '__main__':
   app.run(host = '0.0.0.0',port = 5000)
